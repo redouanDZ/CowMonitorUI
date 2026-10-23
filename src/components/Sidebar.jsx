@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { 
+  Tractor,
   LayoutDashboard, 
   Users, 
   Bell, 
@@ -8,16 +9,16 @@ import {
   Sliders, 
   Activity, 
   Radio, 
-  Sun, 
-  Moon,
+  Sun,
   ShieldAlert
 } from 'lucide-react';
 
-export default function Sidebar({ activeTab, setActiveTab, unreadAlertsCount, theme, toggleTheme }) {
+export default function Sidebar({ activeTab, setActiveTab, unreadAlertsCount }) {
   const menuItems = [
-    { id: 'dashboard', label: 'لوحة القيادة الميدانية', icon: LayoutDashboard },
+    { id: 'farmer', label: 'وضع الفلاح البسيط 🚜', icon: Tractor, isFarmer: true },
+    { id: 'dashboard', label: 'لوحة القيادة والتحليلات', icon: LayoutDashboard },
     { id: 'herd', label: 'إدارة قطيع الأبقار', icon: Users },
-    { id: 'alerts', label: 'مركز التنبيهات الذكي', icon: Bell, badge: unreadAlertsCount },
+    { id: 'alerts', label: 'مركز التنبيهات والإنذار', icon: Bell, badge: unreadAlertsCount },
     { id: 'devices', label: 'أجهزة وأطواق ESP32', icon: Cpu },
     { id: 'settings', label: 'إعدادات النظام والمزرعة', icon: Sliders },
   ];
@@ -42,9 +43,9 @@ export default function Sidebar({ activeTab, setActiveTab, unreadAlertsCount, th
             <button
               key={item.id}
               onClick={() => setActiveTab(item.id)}
-              className={`nav-item ${isActive ? 'active' : ''}`}
+              className={`nav-item ${isActive ? 'active' : ''} ${item.isFarmer ? 'highlight-farmer' : ''}`}
             >
-              <Icon size={19} />
+              <Icon size={20} />
               <span>{item.label}</span>
               {item.badge > 0 && (
                 <span className="nav-badge badge-alert">{item.badge}</span>
@@ -58,20 +59,15 @@ export default function Sidebar({ activeTab, setActiveTab, unreadAlertsCount, th
         <div className="iot-status-pill">
           <div className="status-dot"></div>
           <div style={{ flex: 1 }}>
-            <div style={{ fontSize: '13px', fontWeight: 'bold' }}>بث IoT مباشر</div>
-            <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>122 طوق ESP32 متصل</div>
+            <div style={{ fontSize: '13px', fontWeight: '800', color: '#065f46' }}>بث IoT مباشر</div>
+            <div style={{ fontSize: '11px', color: '#047857' }}>122 طوق ESP32 متصل</div>
           </div>
-          <Radio size={16} color="var(--primary)" />
+          <Radio size={16} color="#059669" />
         </div>
 
-        <button 
-          onClick={toggleTheme} 
-          className="action-btn" 
-          style={{ width: '100%', justifyContent: 'center' }}
-        >
-          {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
-          <span>{theme === 'dark' ? 'الوضع النهاري' : 'الوضع الليلي'}</span>
-        </button>
+        <div style={{ textAlign: 'center', fontSize: '12px', color: '#64748b', fontWeight: '600', padding: '4px' }}>
+          ثيم نهاري فائق الوضوح ☀️
+        </div>
       </div>
     </aside>
   );

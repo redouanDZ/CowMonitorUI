@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import './App.css';
 import { 
   mockFarmStats, 
@@ -9,6 +9,7 @@ import {
 } from './mockData';
 
 import Sidebar from './components/Sidebar';
+import FarmerView from './components/FarmerView';
 import DashboardView from './components/DashboardView';
 import HerdView from './components/HerdView';
 import AlertsView from './components/AlertsView';
@@ -17,26 +18,16 @@ import SettingsView from './components/SettingsView';
 import CowDetailModal from './components/CowDetailModal';
 import AddCowModal from './components/AddCowModal';
 
-import { Bell, Radio, CheckCircle2, Search, SlidersHorizontal } from 'lucide-react';
+import { Bell, Tractor, LayoutDashboard } from 'lucide-react';
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState('dashboard');
-  const [theme, setTheme] = useState('dark');
+  const [activeTab, setActiveTab] = useState('farmer'); // Default to Farmer View!
   const [cows, setCows] = useState(mockCows);
   const [alerts, setAlerts] = useState(mockAlerts);
   const [devices, setDevices] = useState(mockDevices);
   const [farmStats, setFarmStats] = useState(mockFarmStats);
   const [selectedCow, setSelectedCow] = useState(null);
   const [isAddCowOpen, setIsAddCowOpen] = useState(false);
-
-  // Apply theme to document
-  useEffect(() => {
-    document.documentElement.setAttribute('data-theme', theme);
-  }, [theme]);
-
-  const toggleTheme = () => {
-    setTheme(prev => prev === 'dark' ? 'light' : 'dark');
-  };
 
   const handleAcknowledgeAlert = (alertId) => {
     setAlerts(prev => prev.map(a => a.id === alertId ? { ...a, acknowledged: true } : a));
@@ -55,7 +46,8 @@ export default function App() {
 
   const getPageTitle = () => {
     switch (activeTab) {
-      case 'dashboard': return { title: 'لوحة القيادة الميدانية', subtitle: 'نظرة عامة على حالة القطيع وبث أجهزة الـ ESP32 اللحظي' };
+      case 'farmer': return { title: 'واجهة الفلاح الميدانية البسيطة 🚜', subtitle: 'موجز فوري بألوان واضحة بدون تعقيد تقني' };
+      case 'dashboard': return { title: 'لوحة القيادة والتحليلات المتقدمة', subtitle: 'نظرة عامة على حالة القطيع وبث أجهزة الـ ESP32 اللحظي' };
       case 'herd': return { title: 'إدارة قطيع الأبقار', subtitle: 'سجل الأبقار، التوزيع، والفحوصات الحيوية' };
       case 'alerts': return { title: 'مركز التنبيهات والإنذار المبكر', subtitle: 'التنبيهات الصحية ومواسم الشبق' };
       case 'devices': return { title: 'أجهزة وأطواق التتبع (IoT ESP32)', subtitle: 'مراقبة شحن البطاريات وجودة الإشارة' };
@@ -73,8 +65,6 @@ export default function App() {
         activeTab={activeTab} 
         setActiveTab={setActiveTab} 
         unreadAlertsCount={unreadAlertsCount}
-        theme={theme}
-        toggleTheme={toggleTheme}
       />
 
       {/* Main Content Area */}
@@ -87,6 +77,27 @@ export default function App() {
           </div>
 
           <div className="top-actions">
+            {/* Quick Switch Button between Farmer and Dashboard */}
+            {activeTab === 'farmer' ? (
+              <button 
+                onClick={() => setActiveTab('dashboard')} 
+                className="action-btn"
+                style={{ background: '#f1f5f9', fontWeight: 'bold' }}
+              >
+                <LayoutDashboard size={18} />
+                <span>عرض التحليلات المتقدمة 📊</span>
+              </button>
+            ) : (
+              <button 
+                onClick={() => setActiveTab('farmer')} 
+                className="action-btn action-btn-primary"
+                style={{ background: '#d97706', borderColor: '#b45309' }}
+              >
+                <Tractor size={18} />
+                <span>العودة لواجهة الفلاح البسيطة 🚜</span>
+              </button>
+            )}
+
             <button 
               onClick={() => setActiveTab('alerts')} 
               className="action-btn"
@@ -114,31 +125,17 @@ export default function App() {
                 </span>
               )}
             </button>
-
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', borderRight: '1px solid var(--border-card)', paddingRight: '16px' }}>
-              <div style={{
-                width: '38px',
-                height: '38px',
-                borderRadius: '50%',
-                background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
-                color: 'white',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontWeight: 'bold',
-                fontSize: '14px'
-              }}>
-                مدير
-              </div>
-              <div style={{ display: 'none', md: 'block' }}>
-                <div style={{ fontSize: '13px', fontWeight: 'bold' }}>رضوان</div>
-                <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>المشرف البيطري</div>
-              </div>
-            </div>
           </div>
         </header>
 
         {/* View Routing */}
+        {activeTab === 'farmer' && (
+          <FarmerView 
+            cows={cows}
+            onSelectCow={(cow) => setSelectedCow(cow)}
+          />
+        )}
+
         {activeTab === 'dashboard' && (
           <DashboardView 
             farmStats={farmStats} 
